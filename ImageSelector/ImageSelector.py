@@ -133,6 +133,7 @@ class ImageWindow(QWidget):
         if width > max_width:
             width = max_width
             height *= (max_width / image_width)
+
         if height > max_height:
             previous_height = height
             height = max_height
@@ -507,13 +508,13 @@ def init():
     log_config_level = settings.LOGGING
     if log_config_level == 'debug':
         log_level = logging.DEBUG
-    if log_config_level == 'info':
+    elif log_config_level == 'info':
         log_level = logging.INFO
-    if log_config_level == 'warning':
+    elif log_config_level == 'warning':
         log_level = logging.WARNING
-    if log_config_level == 'error':
+    elif log_config_level == 'error':
         log_level = logging.ERROR
-    if log_config_level == 'critical':
+    elif log_config_level == 'critical':
         log_level = logging.CRITICAL
 
     logging.basicConfig(
