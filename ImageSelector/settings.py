@@ -7,12 +7,12 @@
 ###############################################################################
 
 
-# Set the logging level to one of:
-#     {'none', 'debug', 'info', 'warning', 'error', 'critical'}
-LOGGING = 'critical'
+#
+# Options that cannot be set on the command line
+#
 
 # Seconds to pause to allow GUI to refresh correctly
-GUI_TIMEOUT = 0.01
+GUI_TIMEOUT = 0.1
 
 # Stylesheet for the image window
 WINDOW_STYLE = 'background-color: gray;'
@@ -23,11 +23,8 @@ SELECTOR_STYLE = 'background-color: gray; color: white; font-weight: bold;'
 # Type of thumbnails in cache - '.png' or '.jpg'
 CACHE_FILE_EXTENSION = '.jpg'
 
-# Save quality for thumbnail images
-CACHE_IMAGE_QUALITY = 100
-
 # Main window title
-SELECTOR_TITLE = 'Image Selector v0.5'
+SELECTOR_TITLE = 'Image Selector v1.0'
 
 # Main window top left x coordinate
 SELECTOR_TOP_LEFT_X = 0
@@ -65,16 +62,25 @@ PROGRESS_DIALOG_WIDTH = 400
 # Progress dialog height
 PROGRESS_DIALOG_HEIGHT = 30
 
-# Default image directory (can use command-line option)
-IMAGE_DIRECTORY = 'C:/IMAGES'
 
-# Default cache directory (can use command-line option)
-CACHE_DIRECTORY = 'C:/IMAGES/.cache/256x256'
+#
+# Options that can be set on the command line
+#
+
+# Set the logging level to one of:
+#     {'debug', 'info', 'warning', 'error', 'critical'}
+LOGGING = 'critical'
+
+# Default image directory
+IMAGE_DIRECTORY = 'C:/IMAGES/'
+
+# Default cache directory
+CACHE_DIRECTORY = 'C:/IMAGES/.cache/256x256/'
 
 # Cache database file
 CACHE_DATABASE = 'C:/IMAGES/.cache/256x256/database.txt'
 
-# Default image type to search for (can use command-line option)
+# Default image type to search for
 IMAGE_TYPE = 'jpg'
 
 
@@ -84,4 +90,3 @@ IMAGE_TYPE = 'jpg'
 # Local variables:
 # mode: python
 # End:
-
