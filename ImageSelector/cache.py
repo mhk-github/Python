@@ -198,12 +198,11 @@ def make_cache_image_file(file_info):
         An image file name and the name of the cache file to make from it
     """
 
-    cache_image_name = file_info.cache_image_file_name
     with Image.open(file_info.image_file_name).convert('RGB') as image:
         image.thumbnail((settings.ICON_WIDTH, settings.ICON_HEIGHT))
-        image.save(cache_image_name)
+        image.save(file_info.cache_image_file_name)
 
-    return(cache_image_name)
+    return(True)
 
 
 ###############################################################################
