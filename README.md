@@ -1,2 +1,2 @@
 # Python
-A selection of projects written in Python 3
+A selection of projects written in Python 3.
