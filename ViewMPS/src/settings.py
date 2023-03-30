@@ -48,7 +48,7 @@ HISTOGRAM_WIDTH = 800
 HISTOGRAM_HEIGHT = 800
 
 # The starting directory to look in for MPS files
-GUI_START_DIRECTORY = 'C:/Projects/ViewMPS/tests/data'
+GUI_START_DIRECTORY = '<MPS files directory>'
 
 ####################
 # General settings #
