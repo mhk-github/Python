@@ -1,0 +1,2 @@
+flake8 ViewMPS.py
+flake8 settings.py
