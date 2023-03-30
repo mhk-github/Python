@@ -1,0 +1,3 @@
+flake8 absolute_values.py
+flake8 column_tallies.py
+flake8 row_tallies.py
