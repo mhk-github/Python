@@ -1,0 +1,3 @@
+flake8 AnalyzePlyFile.py
+flake8 PLYUtilities.py
+
