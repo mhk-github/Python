@@ -1,0 +1,4 @@
+flake8 DatAnalyzer.py
+flake8 files.py
+flake8 settings.py
+flake8 sql.py
