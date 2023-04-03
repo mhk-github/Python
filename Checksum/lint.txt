@@ -1,0 +1,3 @@
+flake8 Checksum.py
+flake8 Checksum_GUI.py
+flake8 settings.py
