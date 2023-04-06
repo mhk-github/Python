@@ -398,28 +398,28 @@ def intake_mps_file(file_name: str) -> MPSSectionsData:
 
             if not line or line.startswith('*') or line.startswith('&'):
                 continue
-            elif MPS_NAME_SECTION_RE.search(line):
+            elif MPS_NAME_SECTION_RE.match(line):
                 name = line
                 continue
-            elif MPS_ROWS_SECTION_RE.search(line):
+            elif MPS_ROWS_SECTION_RE.match(line):
                 active_l = rows_l
                 has_rows = True
                 continue
-            elif MPS_COLUMNS_SECTION_RE.search(line):
+            elif MPS_COLUMNS_SECTION_RE.match(line):
                 active_l = columns_l
                 has_columns = True
                 continue
-            elif MPS_RHS_SECTION_RE.search(line):
+            elif MPS_RHS_SECTION_RE.match(line):
                 active_l = rhs_l
                 has_rhs = True
                 continue
-            elif MPS_RANGES_SECTION_RE.search(line):
+            elif MPS_RANGES_SECTION_RE.match(line):
                 active_l = ranges_l
                 continue
-            elif MPS_BOUNDS_SECTION_RE.search(line):
+            elif MPS_BOUNDS_SECTION_RE.match(line):
                 active_l = bounds_l
                 continue
-            elif MPS_ENDATA_SECTION_RE.search(line):
+            elif MPS_ENDATA_SECTION_RE.match(line):
                 has_endata = True
                 break
 
@@ -484,7 +484,7 @@ def process_NAME(data: str) -> str:
         MPS problem name
     """
 
-    return MPS_NAME_SECTION_RE.search(data).group(1)
+    return MPS_NAME_SECTION_RE.match(data).group(1)
 
 
 def process_ROWS(data: List[str]) -> Dict[str, RowData]:
@@ -507,7 +507,7 @@ def process_ROWS(data: List[str]) -> Dict[str, RowData]:
     rows_info = {}
     current_row_id = 0
     for line in data:
-        if (matched := MPS_ROWS_DATA_RE.search(line)):
+        if (matched := MPS_ROWS_DATA_RE.match(line)):
             row_type = matched.group(1)
             if row_type not in MPS_ROW_TYPES:
                 error = (
@@ -559,7 +559,7 @@ def process_COLUMNS(
 
     current_column_id = 0
     for line in data:
-        if (matched := MPS_COLUMNS_2_DATA_RE.search(line)):
+        if (matched := MPS_COLUMNS_2_DATA_RE.match(line)):
             column_name = matched.group(1)
             row_1_name = matched.group(2)
             if row_1_name not in rows:
@@ -612,7 +612,7 @@ def process_COLUMNS(
             else:
                 logger.warn(f"      Zero element in '{line}' in COLUMNS !")
 
-        elif (matched := MPS_COLUMNS_1_DATA_RE.search(line)):
+        elif (matched := MPS_COLUMNS_1_DATA_RE.match(line)):
             column_name = matched.group(1)
             row_name = matched.group(2)
             element_value = matched.group(3)
@@ -677,7 +677,7 @@ def process_RHS(
     rhs_dict = {}
     rhs_name = ''
     for line in data:
-        if (matched := MPS_RHS_2_DATA_RE.search(line)):
+        if (matched := MPS_RHS_2_DATA_RE.match(line)):
             if not rhs_name:
                 rhs_name = matched.group(1)
             else:
@@ -709,7 +709,7 @@ def process_RHS(
             rhs_dict[row_1_name] = float(value_1)
             rhs_dict[row_2_name] = float(value_2)
 
-        elif (matched := MPS_RHS_1_DATA_RE.search(line)):
+        elif (matched := MPS_RHS_1_DATA_RE.match(line)):
             if not rhs_name:
                 rhs_name = matched.group(1)
             else:
@@ -729,7 +729,7 @@ def process_RHS(
 
             rhs_dict[row_name] = float(value)
 
-        elif (matched := MPS_RHS_2_DATA_EXTRA_RE.search(line)):
+        elif (matched := MPS_RHS_2_DATA_EXTRA_RE.match(line)):
             row_1_name = matched.group(1)
             if row_1_name not in rows:
                 error = (
@@ -755,7 +755,7 @@ def process_RHS(
             rhs_dict[row_1_name] = float(value_1)
             rhs_dict[row_2_name] = float(value_2)
 
-        elif (matched := MPS_RHS_1_DATA_EXTRA_RE.search(line)):
+        elif (matched := MPS_RHS_1_DATA_EXTRA_RE.match(line)):
             row_name = matched.group(1)
             if row_name not in rows:
                 error = (
@@ -803,7 +803,7 @@ def process_RANGES(
     ranges_dict = {}
     ranges_name = ''
     for line in data:
-        if (matched := MPS_RANGES_2_DATA_RE.search(line)):
+        if (matched := MPS_RANGES_2_DATA_RE.match(line)):
             if not ranges_name:
                 ranges_name = matched.group(1)
             else:
@@ -835,7 +835,7 @@ def process_RANGES(
             ranges_dict[row_1_name] = float(value_1)
             ranges_dict[row_2_name] = float(value_2)
 
-        elif (matched := MPS_RANGES_1_DATA_RE.search(line)):
+        elif (matched := MPS_RANGES_1_DATA_RE.match(line)):
             if not ranges_name:
                 ranges_name = matched.group(1)
             else:
@@ -891,7 +891,7 @@ def process_BOUNDS(
     bounds_dict = {}
     bounds_name = ''
     for line in data:
-        if (matched := MPS_BOUNDS_DATA_RE.search(line)):
+        if (matched := MPS_BOUNDS_DATA_RE.match(line)):
             bound_type = matched.group(1)
             if bound_type not in MPS_BOUNDS_TYPES:
                 error = (
