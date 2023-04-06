@@ -29,10 +29,24 @@ from PyQt5.QtWidgets import (
     QProgressDialog
 )
 from itertools import count
+from typing import (
+    List,
+    TypeVar
+)
 
 import settings
 
 from imageview import ImageWindow
+
+
+###############################################################################
+# TYPING
+###############################################################################
+
+ImageData = TypeVar('ImageData')
+Image_Window = TypeVar('Image_Window')
+QEvent = TypeVar('QEvent')
+QModelIndex = TypeVar('QModelIndex')
 
 
 ###############################################################################
@@ -49,7 +63,7 @@ IMAGE_REGEX = re.compile(r'^(.*)\s+\[')
 class SelectionWindow(QMainWindow):
     """A resizeable icon view window for image files in directories."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
         logger = logging.getLogger(__name__)
@@ -71,7 +85,7 @@ class SelectionWindow(QMainWindow):
 
         logger.debug(f"  Leave SelectionWindow.__init__({self})")
 
-    def create_view(self, cache):
+    def create_view(self, cache: List[ImageData]) -> None:
         """
         Creates the view of image files that can be selected.
 
@@ -131,18 +145,39 @@ class SelectionWindow(QMainWindow):
 
         logger.debug(f"  Leave SelectionWindow.create_view({self}, ...)")
 
-    def add_image_window(self, image_window_ref):
-        """Adds an image window to the record of all active ones."""
+    def add_image_window(self, image_window_ref: Image_Window) -> None:
+        """
+        Adds an image window to the record of all active ones.
+
+        Parameters
+        ----------
+        image_window_ref : ImageWindow
+            ImageWindow object to add to the internal set of references
+        """
 
         self._image_window_refs.add(image_window_ref)
 
-    def remove_image_window(self, image_window_ref):
-        """Removes an image window from the record of all active ones."""
+    def remove_image_window(self, image_window_ref: Image_Window) -> None:
+        """
+        Removes an image window from the record of all active ones.
+
+        Parameters
+        ----------
+        image_window_ref : ImageWindow
+            ImageWindow object to remove from the internal set of references.
+        """
 
         self._image_window_refs.remove(image_window_ref)
 
-    def clicked(self, qmodelindex):
-        """Handles selection of an item."""
+    def clicked(self, qmodelindex: QModelIndex) -> None:
+        """
+        Handles selection of an item.
+
+        Parameters
+        ----------
+        qmodelindex : QModelIndex
+            The item clicked
+        """
 
         logger = logging.getLogger(__name__)
         logger.debug(f"  Enter SelectionWindow.clicked({self}, {qmodelindex})")
@@ -152,7 +187,7 @@ class SelectionWindow(QMainWindow):
             f"    Processing selected item '{item.text()}' possessing status "
             f"tip '{status_text}'"
         )
-        match = IMAGE_REGEX.search(status_text)
+        match = IMAGE_REGEX.match(status_text)
         image = match.group(1)
         picture_window = ImageWindow(
             image,
@@ -162,8 +197,15 @@ class SelectionWindow(QMainWindow):
         picture_window.show()
         logger.debug(f"  Leave SelectionWindow.clicked({self}, ...)")
 
-    def closeEvent(self, event):
-        """Handles a close event, closing active image windows too."""
+    def closeEvent(self, event: QEvent) -> None:
+        """
+        Handles a close event, closing active image windows too.
+
+        Parameters
+        ----------
+        event : QEvent
+            A specific event to close all windows
+        """
 
         logger = logging.getLogger(__name__)
         logger.debug(f"  Enter SelectionWindow.closeEvent({self}, {event})")
@@ -174,6 +216,57 @@ class SelectionWindow(QMainWindow):
             w.close()
 
         logger.debug(f"  Leave SelectionWindow.closeEvent({self}, ...)")
+
+
+###############################################################################
+# FUNCTIONS
+###############################################################################
+
+def main() -> None:
+    """A driver for testing purposes only."""
+
+    import sys
+    from PyQt5.QtWidgets import QApplication
+
+    from cache import ImageFileCache
+
+    logging.basicConfig(
+        format=(
+            '%(asctime)s '
+            '%(name)s '
+            '%(levelname)-8s '
+            '[%(process)06d] '
+            '<%(thread)08X> '
+            '(%(lineno)06d): '
+            '%(message)s'
+        ),
+        datefmt='%H:%M:%S',
+        level=logging.DEBUG
+    )
+    logger = logging.getLogger(__name__)
+    logger.info('selectionview.py - Start')
+
+    c = ImageFileCache(
+        'C:/Learning/Programming/Python/ImageSelector/test/DB/database.txt',
+        'C:/Learning/Programming/Python/ImageSelector/test/cache/',
+        'C:/Learning/Programming/Python/ImageSelector/test/images/',
+        'jpg'
+    )
+    app = QApplication(sys.argv)
+    window = SelectionWindow()
+    window.show()
+    time.sleep(settings.GUI_TIMEOUT)
+    window.create_view(c.data)
+    logger.info('selectionview.py - End -- Control moving to PyQt5')
+    sys.exit(app.exec_())
+
+
+###############################################################################
+# DRIVER
+###############################################################################
+
+if __name__ == '__main__':
+    main()
 
 
 ###############################################################################
