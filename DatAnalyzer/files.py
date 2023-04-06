@@ -48,8 +48,9 @@ Glob = TypeVar('Glob')
 ###############################################################################
 
 RE_DIRECTORY = re.compile(r'^Directory:\s+(.*)$')
+RE_FILE_ATTRIBUTES = re.compile(r'^-[a-][r-]--\s+')
 RE_FILE = re.compile(
-    r'^-a[r-]--\s+(\d{2})\/(\d{2})\/(\d{2})\s+(\d+):(\d{2})\s+(AM|PM)'
+    r'^-[a-][r-]--\s+(\d{2})\/(\d{2})\/(\d{2})\s+(\d+):(\d{2})\s+(AM|PM)'
     r'\s+(\d+)\s+(.*)$'
 )
 RE_IGNORE = re.compile(r'^(?:d[ar-]{4}|Mode|[-]{4})\s+')
@@ -92,7 +93,7 @@ def process_cdat_line(line: str, indent: int = 6) -> Optional[DatRecord]:
         f"{preamble}Enter process_cdat_line(line='{line}', {indent=})"
     )
 
-    if (matched := RE_DATRECORD.search(line)):
+    if (matched := RE_DATRECORD.match(line)):
         dr_file_name = matched.group(1)
         dr_file_size = int(matched.group(2))
         dr_file_mtime = datetime.fromtimestamp(
@@ -248,14 +249,19 @@ def process_dat_file(
                 b = line.strip().encode('utf-8')
                 t = b.decode('utf-8')
                 if t:
-                    if t.startswith('-a---') or t.startswith('-ar--'):
+                    if RE_FILE_ATTRIBUTES.match(t):
+                        if t.startswith('-----'):
+                            logger.warn(
+                                f"{preamble}    File attribute '{t}' !"
+                            )
+
                         maybe_multiline_directory = False
                         maybe_multiline_file = True
                         if directory:
                             posix_directory = PurePath(
-                                RE_DIRECTORY.search(directory)[1]
+                                RE_DIRECTORY.match(directory)[1]
                             ).as_posix()
-                            if RE_WINDOWS_DRIVE.search(posix_directory):
+                            if RE_WINDOWS_DRIVE.match(posix_directory):
                                 posix_directory = posix_directory[2:]
                             directory = None
                             logger.debug(
@@ -263,7 +269,7 @@ def process_dat_file(
                                 f"'{posix_directory}'"
                             )
 
-                        match = RE_FILE.search(t)
+                        match = RE_FILE.match(t)
                         month = int(match[1])
                         day = int(match[2])
                         y = int(match[3])
@@ -301,7 +307,7 @@ def process_dat_file(
                         directory = t
                         maybe_multiline_directory = True
                         maybe_multiline_file = False
-                    elif RE_IGNORE.search(t):
+                    elif RE_IGNORE.match(t):
                         maybe_multiline_directory = False
                         maybe_multiline_file = False
                     else:
