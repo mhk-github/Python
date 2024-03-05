@@ -86,10 +86,7 @@ def main() -> None:
     with open(file, 'r', encoding='utf-8') as in_file:
         logging.debug(f"  Opened file '{file}' for reading")
         line_ctr = 1
-        while True:
-            line = in_file.readline()
-            if not line:
-                break
+        for line in in_file:
             line = line.strip()
             for r in regexes:
                 if r.search(line):
