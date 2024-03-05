@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 # coding: utf-8
 ###############################################################################
-# FILE        : HexII.py
+# FILE        : Hex.py
 # DESCRIPTION : Outputs in hexadecimal form the contents of a given file.
 # LICENSE     : MIT
 ###############################################################################
@@ -93,7 +93,7 @@ PRINT_T = (
 
 
 ###############################################################################
-# MAIN
+# DRIVER
 ###############################################################################
 
 if __name__ == '__main__':
@@ -111,25 +111,20 @@ if __name__ == '__main__':
     )
     args = parser.parse_args()
 
-    with(open(args.filename, mode='rb')) as file_handle:
+    with (open(args.filename, mode='rb')) as in_file:
         offset = 0
-        hex_l = [None] * READ_BUFFER_SIZE
-        printable_l = hex_l.copy()
-        while True:
-            buffer = file_handle.read(READ_BUFFER_SIZE)
-            buf_size = len(buffer)
-            if buf_size == 0:
-                break
+        while buffer := in_file.read(READ_BUFFER_SIZE):
+            hex_l = []
+            printable_l = []
+            for byte in buffer:
+                hex_l.append(HEX_T[byte])
+                printable_l.append(PRINT_T[byte])
 
-            for i in range(buf_size):
-                byte = buffer[i]
-                hex_l[i] = HEX_T[byte]
-                printable_l[i] = PRINT_T[byte]
-
-            if buf_size < READ_BUFFER_SIZE:
+            if len(buffer) < READ_BUFFER_SIZE:
+                buf_size = len(buffer)
                 printable_l = printable_l[:buf_size]
                 hex_l = hex_l[:buf_size + 1]
-                hex_l[buf_size] = PADDING * (READ_BUFFER_SIZE - buf_size)
+                hex_l.append(PADDING * (READ_BUFFER_SIZE - buf_size))
 
             print(
                 f"{offset:08X}  ",
