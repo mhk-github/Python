@@ -1,2 +1,0 @@
-flake8 test_CMPS.py
-flake8 test_MPSException.py
