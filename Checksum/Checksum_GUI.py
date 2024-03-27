@@ -17,9 +17,7 @@ import logging
 import sys
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import (
-    QFontDatabase,
-)
+from PyQt5.QtGui import QFontDatabase
 from PyQt5.QtWidgets import (
     QApplication,
     QButtonGroup,
@@ -42,17 +40,24 @@ import settings
 class Checksum_GUI(QWidget):
     """The main window for this application."""
 
-    # Class variables
-    sha1 = hashlib.sha1()
-    sha224 = hashlib.sha224()
-    sha256 = hashlib.sha256()
-    sha384 = hashlib.sha384()
-    sha512 = hashlib.sha512()
-    sha3_224 = hashlib.sha3_224()
-    sha3_256 = hashlib.sha3_256()
-    sha3_384 = hashlib.sha3_384()
-    sha3_512 = hashlib.sha3_512()
-    md5 = hashlib.md5()
+    ###########################################################################
+    # CLASS VARIABLES
+    ###########################################################################
+
+    _sha1 = hashlib.sha1()
+    _sha224 = hashlib.sha224()
+    _sha256 = hashlib.sha256()
+    _sha384 = hashlib.sha384()
+    _sha512 = hashlib.sha512()
+    _sha3_224 = hashlib.sha3_224()
+    _sha3_256 = hashlib.sha3_256()
+    _sha3_384 = hashlib.sha3_384()
+    _sha3_512 = hashlib.sha3_512()
+    _md5 = hashlib.md5()
+
+    ###########################################################################
+    # CONSTRUCTOR
+    ###########################################################################
 
     def __init__(self) -> None:
         super().__init__()
@@ -134,13 +139,17 @@ class Checksum_GUI(QWidget):
             settings.GUI_HEIGHT
         )
 
-        self.stated_checksum_textbox = stated_checksum_textbox
-        self.match_label = match_label
-        self.file_name = ''
-        self.hash_function = self.sha256
+        self._stated_checksum_textbox = stated_checksum_textbox
+        self._match_label = match_label
+        self._file_name = ''
+        self._hash_function = Checksum_GUI._sha256
         sha256_button.setChecked(True)
 
         logger.debug(f"  Leave Checksum_GUI.__init__({self})")
+
+    ###########################################################################
+    # GUI HANDLERS
+    ###########################################################################
 
     def click_paste_checksum(self) -> None:
         """Pastes text in the system clipboard into the application."""
@@ -148,7 +157,7 @@ class Checksum_GUI(QWidget):
         logger = logging.getLogger(__name__)
         logger.debug(f"  Enter Checksum_GUI.click_paste_checksum({self})")
 
-        self.stated_checksum_textbox.setText(QApplication.clipboard().text())
+        self._stated_checksum_textbox.setText(QApplication.clipboard().text())
 
         logger.debug(f"  Leave Checksum_GUI.click_paste_checksum({self})")
 
@@ -166,7 +175,7 @@ class Checksum_GUI(QWidget):
         )
         if file_name:
             self.setWindowTitle(f"{settings.GUI_WINDOW_TITLE} - '{file_name}'")
-            self.file_name = file_name
+            self._file_name = file_name
             logger.debug(f"    Selected file '{file_name}'")
 
         logger.debug(f"  Leave Checksum_GUI.click_open_file({self})")
@@ -178,30 +187,31 @@ class Checksum_GUI(QWidget):
         logger.debug(f"  Enter Checksum_GUI.click_checksum({self})")
 
         QApplication.setOverrideCursor(Qt.WaitCursor)
-        checksum_function = self.hash_function.copy()
+        checksum_function = self._hash_function.copy()
         try:
-            with open(self.file_name, 'rb') as f:
+            with open(self._file_name, 'rb') as f:
                 while True:
                     data = f.read(settings.READ_AMOUNT)
                     if not data:
                         break
                     checksum_function.update(data)
         except Exception:
-            logger.error(f"    Could not process file '{self.file_name}' !")
+            logger.error(f"    Could not process file '{self._file_name}' !")
         else:
-            logger.debug(f"    Processed file '{self.file_name}'")
+            logger.debug(f"    Processed file '{self._file_name}'")
         found_checksum = checksum_function.hexdigest()
         logger.debug(f"    Found checksum = {found_checksum}")
         QApplication.restoreOverrideCursor()
 
-        stated_checksum = self.stated_checksum_textbox.text()
+        stated_checksum = self._stated_checksum_textbox.text()
         logger.debug(f"    Stated checksum = {stated_checksum}")
+        label = self._match_label
         if stated_checksum == found_checksum:
-            self.match_label.setText('Matched')
-            self.match_label.setStyleSheet(settings.GUI_RIGHT_MATCH_STYLE)
+            label.setText(f"Matched ({found_checksum})")
+            label.setStyleSheet(settings.GUI_RIGHT_MATCH_STYLE)
         else:
-            self.match_label.setText(f"Mismatch ({found_checksum})")
-            self.match_label.setStyleSheet(settings.GUI_WRONG_MATCH_STYLE)
+            label.setText(f"Mismatch ({found_checksum})")
+            label.setStyleSheet(settings.GUI_WRONG_MATCH_STYLE)
 
         logger.debug(f"  Leave Checksum_GUI.click_checksum({self})")
 
@@ -211,7 +221,7 @@ class Checksum_GUI(QWidget):
         logger = logging.getLogger(__name__)
         logger.debug(f"  Enter Checksum_GUI.click_sha1({self})")
 
-        self.hash_function = Checksum_GUI.sha1
+        self._hash_function = Checksum_GUI._sha1
 
         logger.debug(f"  Leave Checksum_GUI.click_sha1({self})")
 
@@ -221,7 +231,7 @@ class Checksum_GUI(QWidget):
         logger = logging.getLogger(__name__)
         logger.debug(f"  Enter Checksum_GUI.click_sha224({self})")
 
-        self.hash_function = Checksum_GUI.sha224
+        self._hash_function = Checksum_GUI._sha224
 
         logger.debug(f"  Leave Checksum_GUI.click_sha224({self})")
 
@@ -231,7 +241,7 @@ class Checksum_GUI(QWidget):
         logger = logging.getLogger(__name__)
         logger.debug(f"  Enter Checksum_GUI.click_sha256({self})")
 
-        self.hash_function = Checksum_GUI.sha256
+        self._hash_function = Checksum_GUI._sha256
 
         logger.debug(f"  Leave Checksum_GUI.click_sha256({self})")
 
@@ -241,7 +251,7 @@ class Checksum_GUI(QWidget):
         logger = logging.getLogger(__name__)
         logger.debug(f"  Enter Checksum_GUI.click_sha384({self})")
 
-        self.hash_function = Checksum_GUI.sha384
+        self._hash_function = Checksum_GUI._sha384
 
         logger.debug(f"  Leave Checksum_GUI.click_sha384({self})")
 
@@ -251,7 +261,7 @@ class Checksum_GUI(QWidget):
         logger = logging.getLogger(__name__)
         logger.debug(f"  Enter Checksum_GUI.click_sha512({self})")
 
-        self.hash_function = Checksum_GUI.sha512
+        self._hash_function = Checksum_GUI._sha512
 
         logger.debug(f"  Leave Checksum_GUI.click_sha512({self})")
 
@@ -261,7 +271,7 @@ class Checksum_GUI(QWidget):
         logger = logging.getLogger(__name__)
         logger.debug(f"  Enter Checksum_GUI.click_sha3_224({self})")
 
-        self.hash_function = Checksum_GUI.sha3_224
+        self._hash_function = Checksum_GUI._sha3_224
 
         logger.debug(f"  Leave Checksum_GUI.click_sha3_224({self})")
 
@@ -271,7 +281,7 @@ class Checksum_GUI(QWidget):
         logger = logging.getLogger(__name__)
         logger.debug(f"  Enter Checksum_GUI.click_sha3_256({self})")
 
-        self.hash_function = Checksum_GUI.sha3_256
+        self._hash_function = Checksum_GUI._sha3_256
 
         logger.debug(f"  Leave Checksum_GUI.click_sha3_256({self})")
 
@@ -281,7 +291,7 @@ class Checksum_GUI(QWidget):
         logger = logging.getLogger(__name__)
         logger.debug(f"  Enter Checksum_GUI.click_sha3_384({self})")
 
-        self.hash_function = Checksum_GUI.sha3_384
+        self._hash_function = Checksum_GUI._sha3_384
 
         logger.debug(f"  Leave Checksum_GUI.click_sha3_384({self})")
 
@@ -291,7 +301,7 @@ class Checksum_GUI(QWidget):
         logger = logging.getLogger(__name__)
         logger.debug(f"  Enter Checksum_GUI.click_sha3_512({self})")
 
-        self.hash_function = Checksum_GUI.sha3_512
+        self._hash_function = Checksum_GUI._sha3_512
 
         logger.debug(f"  Leave Checksum_GUI.click_sha3_512({self})")
 
@@ -301,7 +311,7 @@ class Checksum_GUI(QWidget):
         logger = logging.getLogger(__name__)
         logger.debug(f"  Enter Checksum_GUI.click_md5({self})")
 
-        self.hash_function = Checksum_GUI.md5
+        self._hash_function = Checksum_GUI._md5
 
         logger.debug(f"  Leave Checksum_GUI.click_md5({self})")
 
